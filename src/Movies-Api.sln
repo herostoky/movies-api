@@ -3,10 +3,30 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.Api", "Movies.Api\Movies.Api.csproj", "{3423176B-B3AE-45DC-9A9A-4D54B97B1FCB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.Contracts", "Movies.Contracts\Movies.Contracts.csproj", "{48DD2791-AD32-4CF9-A803-A8647B78942A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.Application", "Movies.Application\Movies.Application.csproj", "{9BB13D19-E878-4FFD-908F-56E91529019D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3423176B-B3AE-45DC-9A9A-4D54B97B1FCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3423176B-B3AE-45DC-9A9A-4D54B97B1FCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3423176B-B3AE-45DC-9A9A-4D54B97B1FCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3423176B-B3AE-45DC-9A9A-4D54B97B1FCB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48DD2791-AD32-4CF9-A803-A8647B78942A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48DD2791-AD32-4CF9-A803-A8647B78942A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48DD2791-AD32-4CF9-A803-A8647B78942A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48DD2791-AD32-4CF9-A803-A8647B78942A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BB13D19-E878-4FFD-908F-56E91529019D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BB13D19-E878-4FFD-908F-56E91529019D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BB13D19-E878-4FFD-908F-56E91529019D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BB13D19-E878-4FFD-908F-56E91529019D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
