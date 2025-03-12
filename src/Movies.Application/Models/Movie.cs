@@ -1,6 +1,6 @@
 ﻿namespace Movies.Application.Models;
 
-internal class Movie
+public class Movie
 {
     public required Guid Id { get; init; }
 

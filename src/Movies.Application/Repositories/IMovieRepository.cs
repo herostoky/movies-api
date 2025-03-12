@@ -2,7 +2,7 @@
 
 namespace Movies.Application.Repositories;
 
-internal interface IMovieRepository
+public interface IMovieRepository
 {
     Task<bool> CreateMovieAsync(Movie movie, CancellationToken cancellationToken);
     Task<Movie?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
