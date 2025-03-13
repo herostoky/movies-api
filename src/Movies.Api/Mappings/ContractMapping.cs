@@ -1,7 +1,7 @@
 ﻿using Movies.Application.Models;
 using Movies.Contracts.Requests;
 
-namespace Movies.Api.Controllers.Mappings;
+namespace Movies.Api.Mappings;
 
 public static class ContractMapping
 {
