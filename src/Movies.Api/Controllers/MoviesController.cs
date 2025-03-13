@@ -23,6 +23,29 @@ public class MoviesController : ControllerBase
     {
         var movie = request.MapToMovie();
         await _movieRepository.CreateAsync(movie, cancellationToken);
-        return Created($"{ApiEndpoint.Movies.Get}{movie.Id}", movie);
+        return Created($"{ApiEndpoint.Movies.Create}/{movie.Id}", movie.MapToMovieResponse());
+    }
+
+    [HttpGet(ApiEndpoint.Movies.Get)]
+    public async Task<IActionResult> GetAsync(
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken)
+    {
+        var movie = await _movieRepository.GetByIdAsync(id, cancellationToken);
+        if (movie is null)
+        {
+            return NotFound(id);
+        }
+
+        return Ok(movie.MapToMovieResponse());
+    }
+
+    [HttpGet(ApiEndpoint.Movies.GetAll)]
+    public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken)
+    {
+        var movies = await _movieRepository.GetAllAsync(cancellationToken);
+
+        var moviesResponse = movies.MapToMoviesResponse();
+        return Ok(moviesResponse);
     }
 }
