@@ -37,7 +37,10 @@ public class MoviesController : ControllerBase
         var movie = await _movieRepository.GetByIdAsync(id, cancellationToken);
         if (movie is null)
         {
-            return NotFound(id);
+            return NotFound(new
+            {
+                id
+            });
         }
 
         return Ok(movie.MapToMovieResponse());
@@ -62,8 +65,28 @@ public class MoviesController : ControllerBase
         var isUpdated = await _movieRepository.UpdateAsync(movie, cancellationToken);
         if (!isUpdated)
         {
-            return NotFound(id);
+            return NotFound(new
+            {
+                id
+            });
         }
         return Ok(movie.MapToMovieResponse());
+    }
+
+    [HttpDelete(ApiEndpoint.Movies.Delete)]
+    public async Task<IActionResult> DeleteAsync(
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken)
+    {
+        var isDeleted = await _movieRepository.DeleteByIdAsync(id, cancellationToken);
+        if (!isDeleted)
+        {
+            return NotFound(new
+            {
+                id
+            });
+        }
+
+        return Ok(isDeleted);
     }
 }
