@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Movies.Application.Models;
+using Movies.Api.Controllers.Mappings;
 using Movies.Application.Repositories;
 using Movies.Contracts.Requests;
 
@@ -21,13 +21,7 @@ public class MoviesController : ControllerBase
         [FromBody] CreateMovieRequest request,
         CancellationToken cancellationToken)
     {
-        var movie = new Movie
-        {
-            Id = Guid.NewGuid(),
-            Title = request.Title,
-            YearOfRelease = request.YearOfRelease,
-            Genres = request.Genres.ToList()
-        };
+        var movie = request.MapToMovie();
         await _movieRepository.CreateAsync(movie, cancellationToken);
         return Created($"api/movies/{movie.Id}", movie);
     }
