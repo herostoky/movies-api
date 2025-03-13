@@ -4,9 +4,9 @@ namespace Movies.Application.Repositories;
 
 public interface IMovieRepository
 {
-    Task<bool> CreateMovieAsync(Movie movie, CancellationToken cancellationToken);
+    Task<bool> CreateAsync(Movie movie, CancellationToken cancellationToken);
     Task<Movie?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
     Task<IEnumerable<Movie>> GetAllAsync(CancellationToken cancellationToken);
-    Task<bool> UpdateMovieAsync(Movie movie, CancellationToken cancellationToken);
+    Task<bool> UpdateAsync(Movie movie, CancellationToken cancellationToken);
     Task<bool> DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
 }

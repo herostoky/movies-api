@@ -6,7 +6,7 @@ public class MovieRepository : IMovieRepository
 {
     private readonly List<Movie> _movies = new();
 
-    public Task<bool> CreateMovieAsync(Movie movie, CancellationToken cancellationToken)
+    public Task<bool> CreateAsync(Movie movie, CancellationToken cancellationToken)
     {
         _movies.Add(movie);
         return Task.FromResult(true);
@@ -23,7 +23,7 @@ public class MovieRepository : IMovieRepository
         return Task.FromResult(_movies.AsEnumerable());
     }
 
-    public Task<bool> UpdateMovieAsync(Movie movie, CancellationToken cancellationToken)
+    public Task<bool> UpdateAsync(Movie movie, CancellationToken cancellationToken)
     {
         var movieIndex = _movies.FindIndex(m => m.Id.Equals(movie.Id));
         if (movieIndex == -1)
