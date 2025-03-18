@@ -18,6 +18,12 @@ public class MovieRepository : IMovieRepository
         return Task.FromResult(movie);
     }
 
+    public Task<Movie?> GetBySlugAsync(string slug, CancellationToken cancellationToken)
+    {
+        var movie = _movies.SingleOrDefault(m => m.Slug.Equals(slug));
+        return Task.FromResult(movie);
+    }
+
     public Task<IEnumerable<Movie>> GetAllAsync(CancellationToken cancellationToken)
     {
         return Task.FromResult(_movies.AsEnumerable());
