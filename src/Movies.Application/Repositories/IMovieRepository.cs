@@ -10,4 +10,5 @@ public interface IMovieRepository
     Task<IEnumerable<Movie>> GetAllAsync(CancellationToken cancellationToken);
     Task<bool> UpdateAsync(Movie movie, CancellationToken cancellationToken);
     Task<bool> DeleteByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<bool> ExistsByIdAsync(Guid id, CancellationToken cancellationToken);
 }
