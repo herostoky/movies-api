@@ -42,7 +42,7 @@ public class MoviesController : ControllerBase
         {
             return NotFound(new
             {
-                id
+                idOrSlug
             });
         }
 
