@@ -18,19 +18,25 @@ public class MovieRepository : IMovieRepository
         using var connection = await _dbConnectionFactory.CreateConnectionAsync(cancellationToken);
         using var transaction = connection.BeginTransaction();
 
-        var movieResult = await connection.ExecuteAsync("""
-                                                        INSERT INTO movies (id, slug, title, year_of_release)
-                                                        VALUES (@Id, @Slug, @Title, @YearOfRelease);
-                                                        """, movie);
+        var movieResult = await connection.ExecuteAsync(
+            new CommandDefinition("""
+                                  INSERT INTO movies (id, slug, title, year_of_release)
+                                  VALUES (@Id, @Slug, @Title, @YearOfRelease);
+                                  """
+                , movie, cancellationToken: cancellationToken));
 
         if (movieResult.Equals(1))
         {
             foreach (var movieGenre in movie.Genres)
             {
-                await connection.ExecuteAsync("""
-                                              INSERT INTO genres (fk_movie_id, name)
-                                              VALUES (@MovieId, @Name);
-                                              """, new { MovieId = movie.Id, Name = movieGenre });
+                await connection.ExecuteAsync(
+                    new CommandDefinition("""
+                                           INSERT INTO genres (fk_movie_id, name)
+                                           VALUES (@MovieId, @Name);
+                                           """
+                        , new { MovieId = movie.Id, Name = movieGenre }
+                        , cancellationToken: cancellationToken)
+                    );
             }
         }
 
@@ -43,22 +49,30 @@ public class MovieRepository : IMovieRepository
     {
         using var connection = await _dbConnectionFactory.CreateConnectionAsync(cancellationToken);
 
-        var movie = await connection.QuerySingleOrDefaultAsync<Movie>("""
-                                                                     SELECT id AS Id, slug AS Slug, title AS Title, year_of_release AS YearOfRelease
-                                                                     FROM movies
-                                                                     WHERE id = @Id;
-                                                                     """, new { Id = id });
+        var movie = await connection.QuerySingleOrDefaultAsync<Movie>(
+            new CommandDefinition("""
+                                   SELECT id AS Id, slug AS Slug, title AS Title, year_of_release AS YearOfRelease
+                                   FROM movies
+                                   WHERE id = @Id;
+                                   """
+                , new { Id = id }
+                , cancellationToken: cancellationToken)
+            );
 
         if (movie is null)
         {
             return movie;
         }
 
-        var genres = await connection.QueryAsync<string>("""
-                                                         SELECT name
-                                                         FROM genres
-                                                         WHERE fk_movie_id = @MovieId;
-                                                         """, new { MovieId = movie.Id });
+        var genres = await connection.QueryAsync<string>(
+            new CommandDefinition("""
+                                   SELECT name
+                                   FROM genres
+                                   WHERE fk_movie_id = @MovieId;
+                                   """
+                , new { MovieId = movie.Id }
+                , cancellationToken: cancellationToken)
+            );
         foreach (var genre in genres)
         {
             movie.Genres.Add(genre);
@@ -71,22 +85,30 @@ public class MovieRepository : IMovieRepository
     {
         using var connection = await _dbConnectionFactory.CreateConnectionAsync(cancellationToken);
 
-        var movie = await connection.QuerySingleOrDefaultAsync<Movie>("""
-                                                                      SELECT id AS Id, slug AS Slug, title AS Title, year_of_release AS YearOfRelease
-                                                                      FROM movies
-                                                                      WHERE slug = @Slug;
-                                                                      """, new { Slug = slug });
+        var movie = await connection.QuerySingleOrDefaultAsync<Movie>(
+            new CommandDefinition("""
+                                   SELECT id AS Id, slug AS Slug, title AS Title, year_of_release AS YearOfRelease
+                                   FROM movies
+                                   WHERE slug = @Slug;
+                                   """
+                , new { Slug = slug }
+                , cancellationToken: cancellationToken)
+            );
 
         if (movie is null)
         {
             return movie;
         }
 
-        var genres = await connection.QueryAsync<string>("""
-                                                         SELECT name
-                                                         FROM genres
-                                                         WHERE fk_movie_id = @MovieId;
-                                                         """, new { MovieId = movie.Id });
+        var genres = await connection.QueryAsync<string>(
+            new CommandDefinition("""
+                                   SELECT name
+                                   FROM genres
+                                   WHERE fk_movie_id = @MovieId;
+                                   """
+                , new { MovieId = movie.Id }
+                , cancellationToken: cancellationToken)
+            );
         foreach (var genre in genres)
         {
             movie.Genres.Add(genre);
@@ -99,14 +121,15 @@ public class MovieRepository : IMovieRepository
     {
         using var connection = await _dbConnectionFactory.CreateConnectionAsync(cancellationToken);
 
-        var movies = await connection.QueryAsync("""
-                                                 SELECT m.id AS Id, m.slug AS Slug, m.title AS Title, m.year_of_release AS YearOfRelease,
-                                                          string_agg(g.name, ', ') As Genres
-                                                 FROM movies m
-                                                 LEFT JOIN genres g
-                                                      ON g.fk_movie_id = m.id
-                                                 GROUP BY m.id
-                                                 """);
+        var movies = await connection.QueryAsync(
+            new CommandDefinition("""
+                                  SELECT m.id AS Id, m.slug AS Slug, m.title AS Title, m.year_of_release AS YearOfRelease,
+                                           string_agg(g.name, ', ') As Genres
+                                  FROM movies m
+                                  LEFT JOIN genres g
+                                       ON g.fk_movie_id = m.id
+                                  GROUP BY m.id
+                                  """, cancellationToken: cancellationToken));
 
         return movies.Select(x => new Movie
         {
@@ -138,10 +161,14 @@ public class MovieRepository : IMovieRepository
         // Insert genres
         foreach (var movieGenre in movie.Genres)
         {
-            await connection.ExecuteAsync("""
-                                          INSERT INTO genres (fk_movie_id, name)
-                                          VALUES (@MovieId, @Name);
-                                          """, new { MovieId = movie.Id, Name = movieGenre });
+            await connection.ExecuteAsync(
+                new CommandDefinition("""
+                                       INSERT INTO genres (fk_movie_id, name)
+                                       VALUES (@MovieId, @Name);
+                                       """
+                    , new { MovieId = movie.Id, Name = movieGenre }
+                    , cancellationToken: cancellationToken)
+                );
         }
 
         // Update movie
