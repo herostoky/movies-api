@@ -117,30 +117,99 @@ public class MovieRepository : IMovieRepository
         });
     }
 
-    public Task<bool> UpdateAsync(Movie movie, CancellationToken cancellationToken)
+    public async Task<bool> UpdateAsync(Movie movie, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        using var connection = await _dbConnectionFactory.CreateConnectionAsync(cancellationToken);
+        using var transaction = connection.BeginTransaction();
 
-        //var movieIndex = _movies.FindIndex(m => m.Id.Equals(movie.Id));
-        //if (movieIndex == -1)
-        //{
-        //    return Task.FromResult(false);
-        //}
+        // Delete genres
+        await connection.ExecuteAsync(
+            new CommandDefinition(
+                """
+                DELETE
+                FROM genres
+                WHERE fk_movie_id = @Id
+                """,
+                new { movie.Id },
+                cancellationToken: cancellationToken
+            )
+        );
 
-        //_movies[movieIndex] = movie;
-        //return Task.FromResult(true);
+        // Insert genres
+        foreach (var movieGenre in movie.Genres)
+        {
+            await connection.ExecuteAsync("""
+                                          INSERT INTO genres (fk_movie_id, name)
+                                          VALUES (@MovieId, @Name);
+                                          """, new { MovieId = movie.Id, Name = movieGenre });
+        }
+
+        // Update movie
+        var result = await connection.ExecuteAsync(
+            new CommandDefinition(
+                """
+                UPDATE movies
+                SET slug = @Slug, title = @Title, year_of_release = @YearOfRelease
+                WHERE id = @Id
+                """,
+                movie,
+                cancellationToken: cancellationToken
+            )
+        );
+
+        transaction.Commit();
+        return result > 0;
     }
 
-    public Task<bool> DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        using var connection = await _dbConnectionFactory.CreateConnectionAsync(cancellationToken);
+        using var transaction = connection.BeginTransaction();
 
-        //var removeCount = _movies.RemoveAll(m => m.Id.Equals(id));
-        //return Task.FromResult(removeCount > 0);
+        // Delete genres
+        await connection.ExecuteAsync(
+            new CommandDefinition(
+                """
+                DELETE
+                FROM genres
+                WHERE fk_movie_id = @id
+                """,
+                new { id },
+                cancellationToken: cancellationToken
+            )
+        );
+
+        // Delete movie
+        var result = await connection.ExecuteAsync(
+            new CommandDefinition(
+                """
+                DELETE
+                FROM movies
+                WHERE id = @id
+                """,
+                new { id },
+                cancellationToken: cancellationToken
+            )
+        );
+
+        transaction.Commit();
+        return result > 0;
     }
 
-    public Task<bool> ExistsByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<bool> ExistsByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        using var connection = await _dbConnectionFactory.CreateConnectionAsync(cancellationToken);
+
+        return await connection.ExecuteScalarAsync<bool>(
+            new CommandDefinition(
+                """
+                SELECT COUNT(1)
+                FROM movies
+                WHERE id = @id
+                """,
+                new { id },
+                cancellationToken: cancellationToken
+            )
+        );
     }
 }

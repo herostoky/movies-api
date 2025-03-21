@@ -90,6 +90,10 @@ public class MoviesController : ControllerBase
             });
         }
 
-        return Ok(isDeleted);
+        return Ok(new
+        {
+            result = isDeleted
+        }
+        );
     }
 }
