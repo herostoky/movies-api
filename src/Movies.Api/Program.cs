@@ -1,3 +1,4 @@
+using Movies.Api.Mappings;
 using Movies.Application.Databases;
 using Movies.Application.Extensions;
 
@@ -28,6 +29,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseMiddleware<ValidationMappingMiddleware>();
 
 app.MapControllers();
 
