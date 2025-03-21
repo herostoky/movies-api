@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Movies.Api.Endpoints;
 using Movies.Api.Mappings;
-using Movies.Application.Repositories;
+using Movies.Application.Services;
 using Movies.Contracts.Requests;
 
 namespace Movies.Api.Controllers;
@@ -9,11 +9,11 @@ namespace Movies.Api.Controllers;
 [ApiController]
 public class MoviesController : ControllerBase
 {
-    private readonly IMovieRepository _movieRepository;
+    private readonly IMovieService _movieService;
 
-    public MoviesController(IMovieRepository movieRepository)
+    public MoviesController(IMovieService movieService)
     {
-        _movieRepository = movieRepository;
+        _movieService = movieService;
     }
 
     [HttpPost(ApiEndpoint.Movies.Create)]
@@ -22,7 +22,7 @@ public class MoviesController : ControllerBase
         CancellationToken cancellationToken)
     {
         var movie = request.MapToMovie();
-        await _movieRepository.CreateAsync(movie, cancellationToken);
+        await _movieService.CreateAsync(movie, cancellationToken);
         return CreatedAtAction(
             actionName: nameof(GetAsync),
             routeValues: new { idOrSlug = movie.Id },
@@ -35,8 +35,8 @@ public class MoviesController : ControllerBase
         CancellationToken cancellationToken)
     {
         var movie = Guid.TryParse(idOrSlug, out var id)
-            ? await _movieRepository.GetByIdAsync(id, cancellationToken)
-            : await _movieRepository.GetBySlugAsync(idOrSlug, cancellationToken);
+            ? await _movieService.GetByIdAsync(id, cancellationToken)
+            : await _movieService.GetBySlugAsync(idOrSlug, cancellationToken);
 
         if (movie is null)
         {
@@ -52,7 +52,7 @@ public class MoviesController : ControllerBase
     [HttpGet(ApiEndpoint.Movies.GetAll)]
     public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken)
     {
-        var movies = await _movieRepository.GetAllAsync(cancellationToken);
+        var movies = await _movieService.GetAllAsync(cancellationToken);
 
         var moviesResponse = movies.MapToMoviesResponse();
         return Ok(moviesResponse);
@@ -65,8 +65,8 @@ public class MoviesController : ControllerBase
         CancellationToken cancellationToken)
     {
         var movie = request.MapToMovie(id);
-        var isUpdated = await _movieRepository.UpdateAsync(movie, cancellationToken);
-        if (!isUpdated)
+        movie = await _movieService.UpdateAsync(movie, cancellationToken);
+        if (movie is null)
         {
             return NotFound(new
             {
@@ -81,7 +81,7 @@ public class MoviesController : ControllerBase
         [FromRoute] Guid id,
         CancellationToken cancellationToken)
     {
-        var isDeleted = await _movieRepository.DeleteByIdAsync(id, cancellationToken);
+        var isDeleted = await _movieService.DeleteByIdAsync(id, cancellationToken);
         if (!isDeleted)
         {
             return NotFound(new
