@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Movies.Api;
 using Movies.Api.Mappings;
 using Movies.Application.Databases;
 using Movies.Application.Extensions;
@@ -31,7 +32,11 @@ builder.Services.AddAuthentication(x =>
     };
 });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(x =>
+{
+    x.AddPolicy(name: AuthConstants.AdminPolicyName,
+        p => p.RequireClaim(claimType: AuthConstants.AdminClaimType, "true"));
+});
 
 builder.Services.AddControllers(
     options => { options.SuppressAsyncSuffixInActionNames = false; }
