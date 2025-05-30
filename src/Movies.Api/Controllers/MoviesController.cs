@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Movies.Api.Endpoints;
 using Movies.Api.Mappings;
 using Movies.Application.Services;
@@ -7,6 +8,7 @@ using Movies.Contracts.Requests;
 namespace Movies.Api.Controllers;
 
 [ApiController]
+[Authorize]
 public class MoviesController : ControllerBase
 {
     private readonly IMovieService _movieService;
@@ -29,6 +31,7 @@ public class MoviesController : ControllerBase
             value: movie.MapToMovieResponse());
     }
 
+    [AllowAnonymous]
     [HttpGet(ApiEndpoint.Movies.Get)]
     public async Task<IActionResult> GetAsync(
         [FromRoute] string idOrSlug,
@@ -49,6 +52,7 @@ public class MoviesController : ControllerBase
         return Ok(movie.MapToMovieResponse());
     }
 
+    [AllowAnonymous]
     [HttpGet(ApiEndpoint.Movies.GetAll)]
     public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken)
     {
