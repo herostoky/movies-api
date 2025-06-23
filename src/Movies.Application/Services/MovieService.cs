@@ -21,22 +21,22 @@ public class MovieService : IMovieService
         return await _movieRepository.CreateAsync(movie, cancellationToken);
     }
 
-    public Task<Movie?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public Task<Movie?> GetByIdAsync(Guid id, Guid? userId, CancellationToken cancellationToken)
     {
-        return _movieRepository.GetByIdAsync(id, cancellationToken);
+        return _movieRepository.GetByIdAsync(id, userId, cancellationToken);
     }
 
-    public Task<Movie?> GetBySlugAsync(string slug, CancellationToken cancellationToken)
+    public Task<Movie?> GetBySlugAsync(string slug, Guid? userId, CancellationToken cancellationToken)
     {
-        return _movieRepository.GetBySlugAsync(slug, cancellationToken);
+        return _movieRepository.GetBySlugAsync(slug, userId, cancellationToken);
     }
 
-    public Task<IEnumerable<Movie>> GetAllAsync(CancellationToken cancellationToken)
+    public Task<IEnumerable<Movie>> GetAllAsync(Guid? userId, CancellationToken cancellationToken)
     {
-        return _movieRepository.GetAllAsync(cancellationToken);
+        return _movieRepository.GetAllAsync(userId, cancellationToken);
     }
 
-    public async Task<Movie?> UpdateAsync(Movie movie, CancellationToken cancellationToken)
+    public async Task<Movie?> UpdateAsync(Movie movie, Guid? userId, CancellationToken cancellationToken)
     {
         await _movieValidator.ValidateAndThrowAsync(movie, cancellationToken);
 
@@ -46,7 +46,7 @@ public class MovieService : IMovieService
             return null;
         }
 
-        await _movieRepository.UpdateAsync(movie, cancellationToken);
+        await _movieRepository.UpdateAsync(movie, userId, cancellationToken);
         return movie;
     }
 

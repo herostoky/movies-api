@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Movies.Api;
+using Movies.Api.Auth;
 using Movies.Api.Mappings;
 using Movies.Application.Databases;
 using Movies.Application.Extensions;
@@ -73,4 +73,4 @@ app.MapControllers();
 var dbInitializer = app.Services.GetRequiredService<DbInitializer>();
 await dbInitializer.InitializeAsync(CancellationToken.None);
 
-app.Run();
+await app.RunAsync();
