@@ -51,11 +51,19 @@ public class MovieRepository : IMovieRepository
 
         var movie = await connection.QuerySingleOrDefaultAsync<Movie>(
             new CommandDefinition("""
-                                   SELECT id AS Id, slug AS Slug, title AS Title, year_of_release AS YearOfRelease
-                                   FROM movies
-                                   WHERE id = @Id;
+                                   SELECT m.id AS Id, m.slug AS Slug, m.title AS Title, m.year_of_release AS YearOfRelease,
+                                   ROUND(AVG(r.rating), 1) AS Rating,
+                                   ROUND(my_r.rating, 1) AS UserRating
+                                   FROM movies m
+                                   LEFT JOIN ratings r
+                                        ON r.fk_movie_id = m.id
+                                   LEFT JOIN ratings my_r
+                                        ON my_r.fk_movie_id = m.id 
+                                        AND my_r.fictive_user_id = @UserId 
+                                   WHERE m.id = @Id
+                                   GROUP BY m.id, my_r.rating;
                                    """
-                , new { Id = id }
+                , new { Id = id, UserId = userId }
                 , cancellationToken: cancellationToken)
             );
 
@@ -87,11 +95,19 @@ public class MovieRepository : IMovieRepository
 
         var movie = await connection.QuerySingleOrDefaultAsync<Movie>(
             new CommandDefinition("""
-                                   SELECT id AS Id, slug AS Slug, title AS Title, year_of_release AS YearOfRelease
-                                   FROM movies
-                                   WHERE slug = @Slug;
+                                   SELECT m.id AS Id, m.slug AS Slug, m.title AS Title, m.year_of_release AS YearOfRelease,
+                                   ROUND(AVG(r.rating), 1) AS Rating,
+                                   ROUND(my_r.rating, 1) AS UserRating
+                                   FROM movies m
+                                   LEFT JOIN ratings r
+                                        ON r.fk_movie_id = m.id
+                                   LEFT JOIN ratings my_r
+                                        ON my_r.fk_movie_id = m.id 
+                                        AND my_r.fictive_user_id = @UserId 
+                                   WHERE m.slug = @Slug
+                                   GROUP BY m.id, my_r.rating;
                                    """
-                , new { Slug = slug }
+                , new { Slug = slug, UserId = userId }
                 , cancellationToken: cancellationToken)
             );
 
@@ -124,7 +140,7 @@ public class MovieRepository : IMovieRepository
         var movies = await connection.QueryAsync(
             new CommandDefinition("""
                                   SELECT m.id AS Id, m.slug AS Slug, m.title AS Title, m.year_of_release AS YearOfRelease,
-                                           string_agg(g.name, ', ') As Genres
+                                           string_agg(DISTINCT g.name, ', ') As Genres
                                   FROM movies m
                                   LEFT JOIN genres g
                                        ON g.fk_movie_id = m.id
