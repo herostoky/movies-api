@@ -35,6 +35,15 @@ public class DbInitializer
                                           name TEXT NOT NULL
                                       );
                                       """);
+
+        await connection.ExecuteAsync("""
+                                      CREATE TABLE IF NOT EXISTS ratings (
+                                          fictive_user_id UUID,
+                                          fk_movie_id UUID REFERENCES movies(id),
+                                          rating INTEGER NOT NULL,
+                                          PRIMARY KEY (fictive_user_id, fk_movie_id)
+                                      );
+                                      """);
     }
 }
 
